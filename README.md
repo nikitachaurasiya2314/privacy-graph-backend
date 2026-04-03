@@ -80,3 +80,94 @@ npm run dev
 - `GET /api/relationships`
 
 ---
+
+
+
+Day 2: Core Structural Schemas
+
+## 🔹 Polymorphic Interaction System
+
+### Goal
+Avoid creating separate tables for each entity type (post, reel, product, etc.)
+
+###  Implementation
+Created unified tables:
+- likes
+- comments
+- shares
+
+###  Key Fields
+- entity_id
+- entity_type (post, reel, product, live_session)
+
+###  Benefit
+- Scalable design
+- Reduced duplication
+- Supports multiple entity types
+
+---
+
+## 🔹 Multi-Vendor Order Architecture
+
+### Goal
+Handle a single checkout with multiple sellers
+
+### Structure
+
+Parent Order → Sub Orders → Order Items
+
+###  Tables
+
+#### Parent Orders
+- Stores full checkout details
+- Linked to buyer
+
+#### Sub Orders
+- Created per seller
+- Linked to parent order
+
+#### Order Items
+- Individual products
+- Linked to sub orders
+
+### Benefit
+- Multi-seller checkout support
+- Separate seller fulfillment
+- Scalable e-commerce design
+
+---
+
+## 🔹 Audit Logs (Immutable Ledger)
+
+###  Goal
+Track all system changes (orders, payments, etc.)
+
+### Rule
+Append-only (no update/delete)
+
+### Fields
+- transaction_id
+- entity_type (order, refund, payout)
+- entity_id
+- old_state
+- new_state
+- amount
+- timestamp
+
+### Benefit
+- Full history tracking
+- Debugging support
+- Financial transparency
+
+---
+
+## Seeder
+
+Seeder implemented to demonstrate:
+- 1 Parent Order
+- Multiple Sub Orders
+- Order Items
+
+Run:
+```bash
+npm run seed
