@@ -3,6 +3,8 @@
     /* Core Setup */
     "target": "ES2020",
     "module": "commonjs",
+      "moduleResolution": "node",
+
 
     /* Paths */
     "rootDir": "./src",
@@ -11,14 +13,16 @@
     /* Node compatibility */
     "esModuleInterop": true,
     "resolveJsonModule": true,
-    "moduleResolution": "node",
 
     /* Strictness */
     "strict": true,
     "skipLibCheck": true,
 
     /* Dev Experience */
-    "sourceMap": true
+    "sourceMap": true,
+     "types": ["node"],
+         "ignoreDeprecations": "6.0"
+
   },
     "exclude": ["node_modules", "drizzle", "drizzle.config.ts"]
 
