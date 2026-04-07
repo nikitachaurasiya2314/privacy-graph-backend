@@ -6,8 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "ts-node-dev --respawn src/server.ts",
-      "seed": "ts-node src/seed.ts"
-
+    "seed": "ts-node src/seed.ts"
   },
   "keywords": [],
   "author": "",
@@ -19,8 +18,12 @@
     "dotenv": "^17.4.0",
     "drizzle-orm": "^0.45.2",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.3.2",
+    "express-session": "^1.19.0",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.3",
+    "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0",
     "pg": "^8.20.0"
   },
   "devDependencies": {
@@ -28,8 +31,11 @@
     "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
+    "@types/express-session": "^1.18.2",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^25.5.0",
+    "@types/passport": "^1.0.17",
+    "@types/passport-google-oauth20": "^2.0.17",
     "@types/pg": "^8.20.0",
     "drizzle-kit": "^0.31.10",
     "ts-node": "^10.9.2",

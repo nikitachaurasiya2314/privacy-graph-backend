@@ -1,29 +1,23 @@
-import { db } from "../db";
-import { users } from "../db/schema/users";import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import { eq } from "drizzle-orm";
-import { env } from "../config/env";
 import { Request, Response } from "express";
-
+import {
+  createUser,
+  validateUser,
+  findOrCreateUser,
+} from "../services/auth.service";
+import { sendOtpService, verifyOtpService } from "../services/otp.service";
+import { generateToken } from "../utils/jwt";
 
 export const register = async (req: Request, res: Response) => {
   try {
     const { name, email, password, role } = req.body;
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const newUser = await db.insert(users).values({
-      name,
-      email,
-      password: hashedPassword,
-      role: role || "buyer",
-    }).returning();
+    const user = await createUser(name, email, password, role);
 
     res.json({
       message: "User registered",
-      user: newUser[0],
+      user,
     });
-  } catch (err:any) {
+  } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
 };
@@ -32,33 +26,47 @@ export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
 
-    const user = await db
-      .select()
-      .from(users)
-      .where(eq(users.email, email));
+    const user = await validateUser(email, password);
 
-    if (!user.length) {
-      return res.status(400).json({ message: "User not found" });
-    }
-
-    const isMatch = await bcrypt.compare(password, user[0].password);
-
-    if (!isMatch) {
-      return res.status(400).json({ message: "Invalid password" });
-    }
-
-    // generate JWT
-    const token = jwt.sign(
-      { id: user[0].id, role: user[0].role },
-      env.JWT_SECRET,
-      { expiresIn: "7d" }
-    );
+    const token = generateToken(user);
 
     res.json({
       message: "Login successful",
       token,
     });
-  } catch (err:any) {
+  } catch (err: any) {
+    res.status(400).json({ error: err.message });
+  }
+};
+
+export const sendOtp = async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
+
+    await sendOtpService(email);
+
+    res.json({ message: "OTP sent" });
+  } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
 };
+
+export const verifyOtp = async (req: Request, res: Response) => {
+  try {
+    const { email, otp } = req.body;
+
+    await verifyOtpService(email, otp);
+
+    const user = await findOrCreateUser(email);
+
+    const token = generateToken(user);
+
+    res.json({
+      message: "Login successful",
+      token,
+    });
+  } catch (err: any) {
+    res.status(400).json({ error: err.message });
+  }
+};
+
