@@ -59,27 +59,36 @@ export const validateUser = async (email: string, password: string) => {
   return user[0];
 };
 
-export const findOrCreateUser = async (
-  email: string,
-  name?: string
-) => {
-  const inserted = await db
-    .insert(users)
-    .values({
-      email,
-      name: name || null,
-      password: null,
-      role: "buyer",
-    })
-    .onConflictDoNothing()
-    .returning();
-
-  if (inserted.length) return inserted[0];
-
-  const existing = await db
+export const findUserByEmail = async (email: string) => {
+  const user = await db
     .select()
     .from(users)
     .where(eq(users.email, email));
 
-  return existing[0];
+  return user[0];
 };
+
+// export const findOrCreateUser = async (
+//   email: string,
+//   name?: string
+// ) => {
+//   const inserted = await db
+//     .insert(users)
+//     .values({
+//       email,
+//       name: name || null,
+//       password: null,
+//       role: "buyer",
+//     })
+//     .onConflictDoNothing()
+//     .returning();
+
+//   if (inserted.length) return inserted[0];
+
+//   const existing = await db
+//     .select()
+//     .from(users)
+//     .where(eq(users.email, email));
+
+//   return existing[0];
+// };

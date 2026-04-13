@@ -300,3 +300,191 @@ utils/
 - Reduces dependency on password storage
 - Prepares system for OAuth (Google, GitHub, etc.)
 - Scalable authentication design
+
+
+
+---
+
+## 🏪 Seller Onboarding & Verification (GST + PAN)
+
+### 🔹 Overview
+
+This module enables **seller registration with business verification**, ensuring compliance with Indian e-commerce regulations.
+
+It includes:
+
+* GST Verification (mock + API-ready)
+* PAN Verification (mock + API-ready)
+* Seller Profile creation
+* OTP-based verification flow
+
+---
+
+### ⚙️ Seller Registration Flow
+
+```
+User fills seller form
+        ↓
+PAN verification
+        ↓
+GST verification
+        ↓
+Seller profile created
+        ↓
+OTP generated and logged in console (development mode)        ↓
+OTP verified → account activated ✅
+```
+
+---
+
+### 🧾 GST Verification
+
+**Purpose:** Validate GSTIN and auto-fetch business details
+
+#### Features:
+
+* GST format validation (15 characters)
+* Mock verification (for development)
+* API-ready structure (Masters India / ClearTax)
+
+#### Mock Test GST:
+
+```
+22ABCDE1234F1Z5 → valid
+```
+
+#### API:
+
+```
+POST /api/gst/verify-gst
+```
+
+Request:
+
+```json
+{
+  "gstin": "22ABCDE1234F1Z5"
+}
+```
+
+Response:
+
+```json
+{
+  "valid": true,
+  "businessName": "ABC Traders Pvt Ltd"
+}
+```
+
+---
+
+### 🪪 PAN Verification
+
+**Purpose:** Verify seller identity and link with GST
+
+#### Features:
+
+* PAN format validation (ABCDE1234F)
+* Mock verification
+* Cross-validation ready (PAN ↔ GST)
+
+#### Mock Test PAN:
+
+```
+ABCDE1234F → valid
+```
+
+#### API:
+
+```
+POST /api/pan/verify-pan
+```
+
+Request:
+
+```json
+{
+  "pan": "ABCDE1234F"
+}
+```
+
+Response:
+
+```json
+{
+  "valid": true,
+  "name": "ABC Traders Pvt Ltd"
+}
+```
+
+---
+
+### 🏪 Seller Profile
+
+**Table:** `seller_profiles`
+
+#### Fields:
+
+| Column      | Type    | Description               |
+| ----------- | ------- | ------------------------- |
+| `id`        | UUID    | Primary key               |
+| `user_id`   | UUID    | Linked to users (1:1)     |
+| `shop_name` | text    | Store name                |
+| `phone`     | text    | Contact number            |
+| `address`   | text    | Shop location             |
+| `has_gst`   | boolean | GST availability          |
+| `gstin`     | text    | GST number (optional)     |
+| `eid`       | text    | Enrollment ID (if no GST) |
+| `pan`       | text    | Seller PAN (optional now) |
+
+---
+
+### 🔌 Seller APIs
+
+#### ➤ Register Seller
+
+```
+POST /api/auth/register-seller
+```
+
+Request:
+
+```json
+{
+  "fullName": "John Doe",
+  "email": "john@example.com",
+  "password": "123456",
+
+  "shopName": "John Store",
+  "phone": "9876543210",
+  "address": "Indore, India",
+
+  "hasGst": true,
+  "gstin": "22ABCDE1234F1Z5",
+  "eid": null,
+  "pan": "ABCDE1234F"
+}
+```
+
+Response:
+
+```json
+{
+  "message": "Seller registered. OTP sent.",
+  "email": "john@example.com"
+}
+```
+
+---
+
+### 🔐 Security Notes
+
+* PAN & sensitive data should be **encrypted (AES-256)** in production
+* GST & PAN APIs should be called from **backend only**
+* Never expose API credentials on frontend
+* OTP verification required before login
+
+---
+
+
+---
